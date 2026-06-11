@@ -1,0 +1,20 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 Int      @id @default(autoincrement())
+  name               String
+  email              String   @unique
+  password           String
+  status             String   @default("unverified")
+  verificationToken  String?  @map("verification_token")
+  lastLoginTime      DateTime @default(now()) @map("last_login_time")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
