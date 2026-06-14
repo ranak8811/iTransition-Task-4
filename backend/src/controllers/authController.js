@@ -1,7 +1,13 @@
 import prisma from "../config/db.js";
 import { sendVerificationEmail } from "../utils/emailService.js";
-import { getUniqIdValue, hashPassword } from "../utils/helpers.js";
+import {
+  comparePassword,
+  generateToken,
+  getUniqIdValue,
+  hashPassword,
+} from "../utils/helpers.js";
 import prismaClientPkg from "@prisma/client";
+
 const { Prisma } = prismaClientPkg;
 
 export const registerUser = async (req, res) => {
@@ -88,5 +94,74 @@ export const verifyEmail = async (req, res) => {
   } catch (error) {
     console.error("Verification Error:", error);
     return res.status(500).send("Internal server error during verification.");
+  }
+};
+
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      status: "error",
+      message: "Email and password are required.",
+    });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        status: "error",
+        message: "Invalid email or password.",
+      });
+    }
+
+    if (user.status === "blocked") {
+      return res.status(403).json({
+        status: "error",
+        message: "Your account is blocked.",
+      });
+    }
+
+    const isPasswordCorrect = await comparePassword(password, user.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        status: "error",
+        message: "Invalid email or password.",
+      });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginTime: new Date() },
+    });
+
+    const token = generateToken({
+      id: updatedUser.id,
+      email: updatedUser.email,
+      status: updatedUser.status,
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Login successful.",
+      token,
+      user: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        status: updatedUser.status,
+      },
+    });
+  } catch (error) {
+    console.error("Login Error:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Something went wrong during login.",
+    });
   }
 };
