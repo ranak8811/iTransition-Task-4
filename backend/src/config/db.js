@@ -3,6 +3,7 @@ import prismaClientPkg from "@prisma/client";
 
 import pg from "pg";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const { PrismaClient } = prismaClientPkg;

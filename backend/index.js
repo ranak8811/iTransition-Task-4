@@ -3,6 +3,7 @@ import cors from "cors";
 import pool from "./src/config/db.js";
 import { getUniqIdValue } from "./src/utils/helpers.js";
 import authRoutes from "./src/routes/authRoutes.js";
+import userRoutes from "./src/routes/userRoutes.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running");
