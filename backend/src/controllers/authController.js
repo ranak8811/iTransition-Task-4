@@ -41,7 +41,7 @@ export const registerUser = async (req, res) => {
       },
     });
 
-    sendVerificationEmail(email, verificationToken);
+    sendVerificationEmail(email, verificationToken, name);
 
     return res.status(201).json({
       status: "success",
