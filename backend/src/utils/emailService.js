@@ -3,7 +3,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export async function sendVerificationEmail(email, token, name = "User") {
-  const verificationLink = `http://localhost:4000/api/auth/verify?token=${token}`;
+  const backendUrl = process.env.BACKEND_URL || "http://localhost:4000";
+
+  const verificationLink = `${backendUrl}/api/auth/verify?token=${token}`;
 
   const brevoApiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;

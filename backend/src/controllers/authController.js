@@ -7,6 +7,9 @@ import {
   hashPassword,
 } from "../utils/helpers.js";
 import prismaClientPkg from "@prisma/client";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const { Prisma } = prismaClientPkg;
 
@@ -90,7 +93,9 @@ export const verifyEmail = async (req, res) => {
       },
     });
 
-    return res.redirect("http://localhost:5173/login?verified=true");
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+
+    return res.redirect(`${clientUrl}/login?verified=true`);
   } catch (error) {
     console.error("Verification Error:", error);
     return res.status(500).send("Internal server error during verification.");
