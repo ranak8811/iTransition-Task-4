@@ -23,10 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Project-specific ignores
-Instructions/
-necessary_files/
-
 # Project envs
 frontend/.env
 backend/.env
